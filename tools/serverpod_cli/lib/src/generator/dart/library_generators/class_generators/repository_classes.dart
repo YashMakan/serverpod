@@ -8,6 +8,8 @@ import 'package:super_string/super_string.dart';
 class BuildRepositoryClass {
   final bool serverCode;
   final GeneratorConfig config;
+  
+  String get db => config.database.name;
 
   BuildRepositoryClass({
     required this.serverCode,
@@ -226,7 +228,7 @@ class BuildRepositoryClass {
 /// items are read from the database.
 ///
 /// ```dart
-/// var persons = await Persons.db.find(
+/// var persons = await Persons.$db.find(
 ///   session,
 ///   where: (t) => t.lastName.equals('Jones'),
 ///   orderBy: (t) => t.firstName,
@@ -302,7 +304,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('db')
+          .property(db)
           .property('find')
           .call([], {
             'where': refer('where').nullSafeProperty('call').call(
@@ -343,7 +345,7 @@ class BuildRepositoryClass {
 /// [offset] defines how many items to skip, after which the next one will be picked.
 ///
 /// ```dart
-/// var youngestPerson = await Persons.db.findFirstRow(
+/// var youngestPerson = await Persons.$db.findFirstRow(
 ///   session,
 ///   where: (t) => t.lastName.equals('Jones'),
 ///   orderBy: (t) => t.age,
@@ -408,7 +410,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('db')
+          .property(db)
           .property('findFirstRow')
           .call(
             [],
@@ -478,7 +480,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('db')
+          .property(db)
           .property('findById')
           .call(
             [refer('id')],
@@ -527,7 +529,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('insert')
             .call([
               refer('rows')
@@ -573,7 +575,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('insertRow')
             .call([
               refer('row')
@@ -628,7 +630,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('update')
             .call([
               refer('rows')
@@ -684,7 +686,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('updateRow')
             .call([
               refer('row')
@@ -741,7 +743,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('delete')
             .call([
               refer('rows')
@@ -786,7 +788,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('deleteRow')
             .call([
               refer('row')
@@ -843,7 +845,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('deleteWhere')
             .call([], {
               'where': refer('where').call([refer(className).property('t')]),
@@ -897,7 +899,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('db')
+            .property(db)
             .property('count')
             .call([], {
               'where': refer('where').nullSafeProperty('call').call(
@@ -1889,7 +1891,7 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.addAll([
             refer('session')
-                .property('db')
+                .property(db)
                 .property(property)
                 .call([
                   refer(localCopyVariable)

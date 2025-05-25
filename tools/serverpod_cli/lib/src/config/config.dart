@@ -29,6 +29,15 @@ enum PackageType {
   internal,
 }
 
+/// The type of the database.
+enum DatabaseOption {
+  /// Postgres database.
+  postgres,
+
+  /// Supabase database.
+  supabase,
+}
+
 class ServerpodProjectNotFoundException implements Exception {
   final String message;
 
@@ -82,6 +91,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
+    this.database = DatabaseOption.postgres
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
         _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
@@ -117,6 +127,9 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The parts of the path where the server package is located at.
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
+
+  /// The database option.
+  final DatabaseOption database;
 
   @override
   List<String> get libSourcePathParts =>
@@ -370,6 +383,26 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
+    DatabaseOption databaseOption = DatabaseOption.postgres; // Default
+    final dbConfigValue = generatorConfig['database'];
+    if (dbConfigValue is String) {
+      if (dbConfigValue.toLowerCase() == 'supabase') {
+        databaseOption = DatabaseOption.supabase;
+      } else if (dbConfigValue.toLowerCase() == 'postgres') {
+        databaseOption = DatabaseOption.postgres;
+      } else {
+        log.warning(
+          'Invalid value "$dbConfigValue" for "database" in config/generator.yaml. '
+              'Allowed values are "postgres" or "supabase". Defaulting to "postgres".',
+        );
+      }
+    } else if (dbConfigValue != null) {
+      log.warning(
+        'Invalid type for "database" in config/generator.yaml. Expected a string. '
+            'Defaulting to "postgres".',
+      );
+    }
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -383,6 +416,7 @@ class GeneratorConfig implements ModelLoadConfig {
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
+      database: databaseOption
     );
   }
 
